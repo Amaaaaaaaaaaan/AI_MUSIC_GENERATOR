@@ -1,3 +1,7 @@
+//todo -- add prompt when user wants to download the file so he can save the file with their desired name
+import WaveSurfer from 'https://unpkg.com/wavesurfer.js@latest/dist/wavesurfer.esm.js';
+let prompt=document.getElementById("prompt")
+
 let promptInput = document.getElementById("prompt");
 let loadingIndicator = document.getElementById("loading");
 
@@ -23,16 +27,39 @@ document.getElementById("generateMusic").addEventListener("click", () => {
     loadingIndicator.style.display = "block"; // Show loading indicator
     query({ "inputs": promptInput.value })
         .then((response) => {
+            console.log(response)
             const audioURL = URL.createObjectURL(response);
-            const audioElement = document.createElement("audio");
+            console.log(audioURL)
+            const wavesurfer = WaveSurfer.create({
+                container: '#waveform',
+                waveColor: '#4F4A85',
+                progressColor: '#383351',
+                url: audioURL,
+              })
+             
+document.getElementById('playPauseBtn').addEventListener('click', () => {
+    wavesurfer.playPause();
+});
 
-            // Set attributes for the audio element
-            audioElement.src = audioURL;
-            audioElement.controls = true; // Show playback controls
-            audioElement.play(); // Play the audio immediately
+              document.getElementById('downloadBtn').addEventListener('click', () => {
+                const link = document.createElement('a');
+                link.href = audioURL; // Use the same URL you loaded
+                link.download = prompt.value; // Specify the filename
 
-            // Append the audio element to the container
-            document.getElementById("audioContainer").appendChild(audioElement);
+
+                document.body.appendChild(link); // Append to body
+                link.click(); // Trigger download
+                document.body.removeChild(link); // Clean up
+            });              
+            // const audioElement = document.createElement("audio");
+
+            // // Set attributes for the audio element
+            // audioElement.src = audioURL;
+            // audioElement.controls = true; // Show playback controls
+            // audioElement.play(); // Play the audio immediately
+
+            // // Append the audio element to the container
+            // document.getElementById("audioContainer").appendChild(audioElement);
         })
         .catch((error) => {
             console.error("Error generating music:", error);
@@ -41,6 +68,10 @@ document.getElementById("generateMusic").addEventListener("click", () => {
             loadingIndicator.style.display = "none"; // Hide loading indicator when done
         });
 });
+document.getElementById('playPauseBtn').addEventListener('click', () => {
+    wavesurfer.playPause();
+});
+
 // below i have written all the steps taken to use the inference API using a BACKEND here EXPRESS(node)JS
 /*
 
